@@ -1,1 +1,7 @@
-https://colab.research.google.com/drive/1TzAWn2nlA2C3_zUZQqbVh-hZrt05GR2Q?usp=sharing
+generacion_imagenes_manzanas_buenas.ipynb
+https://colab.research.google.com/drive/1YrBR3anQxno-di3pOUx0l6XXsKUBWCJw?usp=sharing
+generacion_imagenes_manzanas_malas.ipynb
+https://colab.research.google.com/drive/1KiqceacDUJ146fGW_fD51idyKJYdle_g?usp=sharing
+Clasificación_binaria_de_calidad_de_manzanas.ipynb
+https://colab.research.google.com/drive/1RXUVR52gHbgajlR1ifWA_n35-vW7jSKY?usp=sharing
+

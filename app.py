@@ -1,9 +1,10 @@
 import torch
 from torchvision import transforms
 from PIL import Image
-import torch
 import torch.nn as nn
 import streamlit as st
+import onnx
+import onnxruntime
 import serial
 
 
@@ -25,11 +26,27 @@ class CNN(nn.Module):
         return x
 
 
-# Ruta del modelo guardado
-model_path = "apple_classifier_model_512_70.pth"
-model = CNN()
-model.load_state_dict(torch.load(model_path))
-model.eval()
+# Cargar un PyTorch model
+## Ruta del modelo guardado
+# model_path = "apple_classifier_model_512_70.pth"
+# model = CNN()
+# model.load_state_dict(torch.load(model_path))
+# model.eval()
+
+# Cargar modelo ONNX
+model_path = "./models/modelo_manzanas_0.9813664596273292_2023-12-14_17-01-13.onnx"
+model = onnx.load(model_path)
+
+# Crear una instancia del modelo CNN
+cnn_model = CNN()
+
+# Crear una sesión ONNX para realizar inferencia
+onnx_session = onnxruntime.InferenceSession(model_path)
+
+# Obtener información sobre las entradas del modelo ONNX
+input_info = onnx_session.get_inputs()
+# print("Entradas del modelo ONNX:", input_info)
+
 transform = transforms.Compose(
     [
         transforms.Resize((512, 512)),
@@ -50,15 +67,19 @@ if uploaded_file is not None:
 
     # Realizar la predicción
     with torch.no_grad():
-        output = model(image)
+        output = onnx_session.run(None, {input_info[0].name: image.numpy()})
 
     # Obtener la clase predicha
-    _, predicted_class = torch.max(output, 1)
+    predicted_class = torch.argmax(torch.tensor(output[0]))
 
     # Mostrar el resultado
     result = "Buena" if predicted_class.item() == 0 else "Mala"
-    st.write(f"La imagen es clasificada como: {result}")
-    # enviar el resultado al arduino condicional ternario
+    if result == "Buena":
+        st.success("¡La manzana está buena!")
+    else:
+        st.error("¡La manzana está mala!")
+
+    # Enviar el resultado al Arduino
     arduino = serial.Serial("COM3", 9600)
     arduino.write(b"b") if result == "Buena" else arduino.write(b"m")
     arduino.close()

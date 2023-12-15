@@ -1,0 +1,9 @@
+torch
+scikit-learn
+torchvision 
+Pillow 
+streamlit 
+pyserial
+onnx
+onnxruntime 
+tensorboard
